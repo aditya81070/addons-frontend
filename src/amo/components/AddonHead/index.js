@@ -20,6 +20,7 @@ import translate from 'core/i18n/translate';
 import { getPreviewImage } from 'core/imageUtils';
 import { hrefLangs } from 'core/languages';
 import { getAddonJsonLinkedData } from 'core/utils/addons';
+import HrefLang from 'ui/components/HrefLang';
 import type { AppState } from 'amo/store';
 import type { I18nType } from 'core/types/i18n';
 import type { AddonType } from 'core/types/addons';
@@ -169,34 +170,6 @@ export class AddonHeadBase extends React.Component<InternalProps> {
     return tags;
   }
 
-  renderAlternateLinks() {
-    const { _config, _hrefLangs, addon, clientApp, lang } = this.props;
-
-    invariant(addon, 'addon is required');
-
-    if (_config.get('unsupportedHrefLangs').includes(lang)) {
-      return null;
-    }
-
-    const hrefLangsMap = _config.get('hrefLangsMap');
-
-    return _hrefLangs.map((hrefLang) => {
-      const locale = hrefLangsMap[hrefLang] || hrefLang;
-
-      return (
-        <link
-          href={getCanonicalURL({
-            _config,
-            locationPathname: `/${locale}/${clientApp}/addon/${addon.slug}/`,
-          })}
-          hrefLang={hrefLang}
-          key={hrefLang}
-          rel="alternate"
-        />
-      );
-    });
-  }
-
   render() {
     const { _config, addon, locationPathname } = this.props;
 
@@ -212,7 +185,7 @@ export class AddonHeadBase extends React.Component<InternalProps> {
           rel="canonical"
           href={getCanonicalURL({ locationPathname, _config })}
         />
-        {this.renderAlternateLinks()}
+        <HrefLang path={`/addon/${addon.slug}/`} />
 
         <meta name="description" content={this.getPageDescription()} />
         <meta name="date" content={addon.created} />
